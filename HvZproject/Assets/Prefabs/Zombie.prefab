@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 189126665467454251}
   - component: {fileID: 189126665467454252}
   - component: {fileID: 189126665467454253}
-  - component: {fileID: 189126665467454248}
+  - component: {fileID: 7974720967539211429}
   m_Layer: 0
   m_Name: Zombie
   m_TagString: Untagged
@@ -59,7 +59,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ff2f69cec5ec2934d8d2120fbd297309, type: 2}
+  - {fileID: 2100000, guid: 3f6aa4ca62a32d647998adf0aa000979, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -67,6 +67,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -92,7 +93,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &189126665467454248
+--- !u!114 &7974720967539211429
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -101,10 +102,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 189126665467454254}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0053e6e325d6c56409f451a4e177ac3f, type: 3}
+  m_Script: {fileID: 11500000, guid: adcf30866ef53644e9a59b5ef1d4565e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  position: {x: 0, y: 0, z: 0}
+  direction: {x: 0, y: 0, z: 0}
+  velocity: {x: 0, y: 0, z: 0}
+  acceleration: {x: 0, y: 0, z: 0}
   mass: 1
   maxSpeed: 4
-  target: {fileID: 0}
-  isSeeking: 1
+  human: {fileID: 0}

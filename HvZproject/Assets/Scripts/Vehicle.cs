@@ -4,24 +4,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class Vehicle : MonoBehaviour
+public abstract class Vehicle : MonoBehaviour
 {
     // Vectors for the physics
-    private Vector3 position;
-    private Vector3 direction;
-    private Vector3 velocity;
-    private Vector3 acceleration;
-    
-    // The mass of the object. Note that this can't be zero
-    public float mass = 1;
+   public Vector3 position;
+   public Vector3 direction;
+   public Vector3 velocity;
+   public Vector3 acceleration;
+ 
+   // The mass of the object. Note that this can't be zero
+   public float mass = 1;
 
-    public float maxSpeed = 4;
-    
-    private const float MIN_VELOCITY = 0.1f;
+   public float maxSpeed = 4;
 
-    public GameObject target;
+   public  const float MIN_VELOCITY = 0.1f;
 
-    public bool isSeeking = true;
+
     
     private void Start()
     {
@@ -34,16 +32,7 @@ public class Vehicle : MonoBehaviour
 
     private void Update()
     {
-        if (isSeeking)
-        {
-            ApplyForce(Seek(target));
-        }
-        else
-        {
-            ApplyForce(Flee(target));
-        }
-        
-        //CalcSteeringForces();
+        CalcSteeringForces();
         // Then, calculate the physics
         UpdatePhysics();
         // Make sure the vehicle stays on screen (remove this for the exercise)
@@ -59,6 +48,7 @@ public class Vehicle : MonoBehaviour
     {
         // Add acceleration to velocity, and have that be scaled with time
         velocity += acceleration * Time.deltaTime;
+        velocity.y = 0f;
         
         // Change the position based on velocity over time
         position += velocity * Time.deltaTime;
@@ -79,21 +69,21 @@ public class Vehicle : MonoBehaviour
         Vector3 max = cam.ScreenToWorldPoint(new Vector3(cam.pixelWidth, cam.pixelHeight, cam.nearClipPlane));
         Vector3 min = cam.ScreenToWorldPoint(new Vector3(0, 0, cam.nearClipPlane));
 
-        if (position.x > max.x && velocity.x > 0)
+        if (position.x > 25f && velocity.x > 0)
         {
             velocity.x *= -1;
         }
-        if (position.y > max.y && velocity.y > 0)
+        if (position.z > 25f && velocity.z > 0)
         {
-            velocity.y *= -1;
+            velocity.z *= -1;
         }
-        if (position.x < min.x && velocity.x < 0)
+        if (position.x < -25f && velocity.x < 0)
         {
             velocity.x *= -1;
         }
-        if (position.y < min.y && velocity.y < 0)
+        if (position.z < -25f && velocity.z < 0)
         {
-            velocity.y *= -1;
+            velocity.z *= -1;
         }
     }
     
@@ -141,7 +131,7 @@ public class Vehicle : MonoBehaviour
     /// Applies friction to the vehicle
     /// </summary>
     /// <param name="coeff">The coefficient of friction</param>
-    private void ApplyFriction(float coeff)
+    protected void ApplyFriction(float coeff)
     {
         // If the velocity is below a minimum value, just stop the vehicle
         if (velocity.magnitude < MIN_VELOCITY)
@@ -183,7 +173,7 @@ public class Vehicle : MonoBehaviour
         return steeringForce;
     }
 
-    private Vector3 Seek(GameObject targetObj)
+    public Vector3 Seek(GameObject targetObj)
     {
         return Seek(targetObj.transform.position);
     }
@@ -198,12 +188,12 @@ public class Vehicle : MonoBehaviour
         return steeringForce;
     }
 
-    private Vector3 Flee(GameObject targetObject)
+    public Vector3 Flee(GameObject targetObject)
     {
         return Flee(targetObject.transform.position);
     }
 
-    //public abstract void CalcSteeringForces();
+    protected abstract void CalcSteeringForces();
     
 
     

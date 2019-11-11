@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 201993219419021643}
   - component: {fileID: 201993219419021642}
   - component: {fileID: 201993219419021645}
-  - component: {fileID: 201993219419021644}
+  - component: {fileID: 4043095603022197888}
   m_Layer: 0
   m_Name: Human
   m_TagString: Untagged
@@ -59,7 +59,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 312321506257040479d135a5b40b579a, type: 2}
+  - {fileID: 2100000, guid: 7b68eab4920e4c24aa57670b1ba0e204, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -67,6 +67,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -92,7 +93,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &201993219419021644
+--- !u!114 &4043095603022197888
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -101,10 +102,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 201993219419021647}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0053e6e325d6c56409f451a4e177ac3f, type: 3}
+  m_Script: {fileID: 11500000, guid: f4b273f966492b14db1593613e840a9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  position: {x: 0, y: 0, z: 0}
+  direction: {x: 0, y: 0, z: 0}
+  velocity: {x: 0, y: 0, z: 0}
+  acceleration: {x: 0, y: 0, z: 0}
   mass: 1
   maxSpeed: 4
-  target: {fileID: 0}
-  isSeeking: 1
+  zombie: {fileID: 0}
+  isBeingSeeked: 0
+  frictionCoeff: 0.5
