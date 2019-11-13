@@ -109,6 +109,10 @@ MonoBehaviour:
   direction: {x: 0, y: 0, z: 0}
   velocity: {x: 0, y: 0, z: 0}
   acceleration: {x: 0, y: 0, z: 0}
+  material1: {fileID: 2100000, guid: 1ebf556a712194246949a7aec9a93e3a, type: 2}
+  material2: {fileID: 2100000, guid: 6c0902af1fa2f174dbbd822eec51dd34, type: 2}
+  material3: {fileID: 2100000, guid: 8102d013a7773f147bf2d2775e007539, type: 2}
   mass: 1
   maxSpeed: 4
-  human: {fileID: 0}
+  nearestHuman: {fileID: 0}
+  debugLines: 0

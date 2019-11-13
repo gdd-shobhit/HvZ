@@ -10,16 +10,17 @@ public class Human : Vehicle
     protected override void CalcSteeringForces()
     {
         Vector3 ultimateForce = Vector3.zero;
-        if (zombie != null)
+        
+        if (CheckIfZombieIsNear())
         {
-
             isBeingSeeked = true;
             ultimateForce += this.Flee(zombie);
             Vector3.ClampMagnitude(ultimateForce, this.maxSpeed);
             this.ApplyForce(ultimateForce);
+            CheckIfZombieIsNear();
         }
         else
-        {
+        {  
             isBeingSeeked = false;
         }
 
@@ -29,14 +30,16 @@ public class Human : Vehicle
         }
     }
 
-    void CheckIfZombieIsNear()
+    bool CheckIfZombieIsNear()
     {
         for (int i = 0; i < GameManager.instance.listOfZombies.Count; i++)
         {
             if (Vector3.Distance(gameObject.transform.position,
                 GameManager.instance.listOfZombies[i].gameObject.transform.position) < 5f){
                 this.zombie = GameManager.instance.listOfZombies[i].gameObject;
-            }
+                return true;
+            }          
         }
+        return false;
     }
 }

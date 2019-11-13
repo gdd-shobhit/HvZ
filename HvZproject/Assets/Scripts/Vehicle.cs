@@ -7,20 +7,23 @@ using UnityEngine.UIElements;
 public abstract class Vehicle : MonoBehaviour
 {
     // Vectors for the physics
-   public Vector3 position;
-   public Vector3 direction;
-   public Vector3 velocity;
-   public Vector3 acceleration;
- 
-   // The mass of the object. Note that this can't be zero
-   public float mass = 1;
+    public Vector3 position;
+    public Vector3 direction;
+    public Vector3 velocity;
+    public Vector3 acceleration;
+    public Material material1;
+    public Material material2;
+    public Material material3;
 
-   public float maxSpeed = 4;
+    // The mass of the object. Note that this can't be zero
+    public float mass = 1;
 
-   public  const float MIN_VELOCITY = 0.1f;
+    public float maxSpeed = 4;
+
+    public const float MIN_VELOCITY = 0.1f;
 
 
-    
+
     private void Start()
     {
         // Initialize all the vectors
@@ -49,13 +52,13 @@ public abstract class Vehicle : MonoBehaviour
         // Add acceleration to velocity, and have that be scaled with time
         velocity += acceleration * Time.deltaTime;
         velocity.y = 0f;
-        
+
         // Change the position based on velocity over time
         position += velocity * Time.deltaTime;
-        
+
         // Calculate the direction vector
         direction = velocity.normalized;
-        
+
         // Reset the acceleration for the next frame
         acceleration = Vector3.zero;
     }
@@ -86,7 +89,7 @@ public abstract class Vehicle : MonoBehaviour
             velocity.z *= -1;
         }
     }
-    
+
     /// <summary>
     /// Wraps the vehicle around the screen
     /// </summary>
@@ -122,7 +125,7 @@ public abstract class Vehicle : MonoBehaviour
         // Atan2 determines angle of velocity against the right vector
         float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0, 0, angle);
-        
+
         // Update position
         gameObject.transform.position = position;
     }
@@ -139,13 +142,13 @@ public abstract class Vehicle : MonoBehaviour
             velocity = Vector3.zero;
             return;
         }
-        
+
         Vector3 friction = velocity * -1;
         friction.Normalize();
         friction = friction * coeff;
         acceleration += friction;
     }
-    
+
     /// <summary>
     /// Applies a force to the vehicle
     /// </summary>
@@ -158,7 +161,7 @@ public abstract class Vehicle : MonoBehaviour
             Debug.LogError("Mass cannot be zero!");
             return;
         }
-        
+
         // Add our force to the acceleration for this frame
         acceleration += force / mass;
     }
@@ -169,7 +172,7 @@ public abstract class Vehicle : MonoBehaviour
         desiredVelocity.Normalize();
         desiredVelocity *= maxSpeed;
         Vector3 steeringForce = desiredVelocity - velocity;
-        Debug.DrawLine(position, position + steeringForce, Color.red);
+        //Debug.DrawLine(position, position + steeringForce, Color.red);
         return steeringForce;
     }
 
@@ -184,7 +187,7 @@ public abstract class Vehicle : MonoBehaviour
         desiredVelocity.Normalize();
         desiredVelocity *= maxSpeed;
         Vector3 steeringForce = desiredVelocity - velocity;
-        Debug.DrawLine(position, position + steeringForce);
+        //Debug.DrawLine(position, position + steeringForce);
         return steeringForce;
     }
 
@@ -194,11 +197,12 @@ public abstract class Vehicle : MonoBehaviour
     }
 
     protected abstract void CalcSteeringForces();
-    
 
-    
+  
 
-    #if UNITY_EDITOR
+
+
+#if UNITY_EDITOR
     private void OnValidate()
     {
         // Make sure that mass isn't set to 0
