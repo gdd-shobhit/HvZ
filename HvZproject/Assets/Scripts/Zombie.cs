@@ -23,8 +23,8 @@ public class Zombie : Vehicle
         {
             debugLines = !debugLines;
         }
-        
-       
+
+        this.ApplyForce(ObstacleAvoidance()*mass);
     }
 
     private Human FindNearestHuman(List<Human> list)

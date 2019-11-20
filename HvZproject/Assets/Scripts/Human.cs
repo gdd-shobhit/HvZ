@@ -28,6 +28,8 @@ public class Human : Vehicle
         {
             this.velocity = Vector3.zero;
         }
+
+        this.ApplyForce(ObstacleAvoidance()*2);
     }
 
     bool CheckIfZombieIsNear()

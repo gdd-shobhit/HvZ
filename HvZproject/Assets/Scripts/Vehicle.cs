@@ -14,6 +14,8 @@ public abstract class Vehicle : MonoBehaviour
     public Material material1;
     public Material material2;
     public Material material3;
+    public List<Obstacle> obsList;
+    public float radius;
 
     // The mass of the object. Note that this can't be zero
     public float mass = 1;
@@ -31,6 +33,8 @@ public abstract class Vehicle : MonoBehaviour
         direction = Vector3.right;
         velocity = Vector3.zero;
         acceleration = Vector3.zero;
+        obsList = new List<Obstacle>(FindObjectsOfType<Obstacle>());
+        radius = gameObject.transform.localScale.x / 2;
     }
 
     private void Update()
@@ -199,8 +203,60 @@ public abstract class Vehicle : MonoBehaviour
     protected abstract void CalcSteeringForces();
 
   
+    public Vector3 ObstacleAvoidance()
+    {
+        
+        Vector3 desiredVelocity=Vector3.zero;
+        
+        for(int i = 0; i < obsList.Count; i++)
+        {
 
+            // removing obstacles behind the vehicle
+            if (Vector3.Dot(Vector3.forward, obsList[i].transform.position - this.position) < 0)
+            {
+               
+            }
+            // checking if the obstacle is in the imaginary radius
+            else if ((obsList[i].transform.position - this.position).magnitude < 3)
+            {
+                // Checking if obstacle is left
+                if (Vector3.Dot(Vector3.left, obsList[i].transform.position - this.position) > 0)
+                {
+                    Debug.Log("left");
+                    // if left then is it colliding?
+                    if (Vector3.Dot(Vector3.left, obsList[i].transform.position - this.position)
+                        < radius + obsList[i].radius+2)
+                    {
+                       
+                        desiredVelocity =- Vector3.right;
+                        desiredVelocity *= maxSpeed*2;
+                        return desiredVelocity - velocity;
+                    }
+                    
+                }
+                // Checking if obstacle is right
+                else if(Vector3.Dot(Vector3.right, obsList[i].transform.position - this.position) >= 0)
+                {
+                    Debug.Log("right");
+                    // if right then is it colliding?
+                    if (Vector3.Dot(Vector3.right, obsList[i].transform.position - this.position)
+                        < radius + obsList[i].radius+2)
+                    {
+                       
+                        desiredVelocity = -Vector3.left;
+                        desiredVelocity *= maxSpeed*2;
+                        return desiredVelocity - velocity;
+                    }
+                }
+            }
+            
+            
+        }
+        return Vector3.zero;
+       
+    }
 
+ 
 
 #if UNITY_EDITOR
     private void OnValidate()
