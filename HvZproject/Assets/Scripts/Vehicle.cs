@@ -15,7 +15,9 @@ public abstract class Vehicle : MonoBehaviour
     public Material material2;
     public Material material3;
     public List<Obstacle> obsList;
+    public GameObject ground;
     public float radius;
+    public float safeDistance;
 
     // The mass of the object. Note that this can't be zero
     public float mass = 1;
@@ -35,6 +37,7 @@ public abstract class Vehicle : MonoBehaviour
         acceleration = Vector3.zero;
         obsList = new List<Obstacle>(FindObjectsOfType<Obstacle>());
         radius = gameObject.transform.localScale.x / 2;
+        safeDistance = 5f;
     }
 
     private void Update()
@@ -128,8 +131,9 @@ public abstract class Vehicle : MonoBehaviour
     {
         // Atan2 determines angle of velocity against the right vector
         float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0, 0, angle);
-
+        //transform.rotation = Quaternion.Euler(0, 0, angle);
+        // Sets the rotation of the vehicle to face towards it's velocity
+        transform.rotation = Quaternion.LookRotation(velocity.normalized, Vector3.up);
         // Update position
         gameObject.transform.position = position;
     }
@@ -185,6 +189,15 @@ public abstract class Vehicle : MonoBehaviour
         return Seek(targetObj.transform.position);
     }
 
+    public Vector3 Pursuit(Human human)
+    {
+        Vector3 futurePosition = human.gameObject.transform.position + human.velocity*Time.deltaTime*40;
+        Vector3 steeringForce = Seek(human.GetFuturePosition(2f));
+        Debug.DrawLine(this.position, human.GetFuturePosition(2f), Color.red);
+        //Debug.DrawLine(position, position + steeringForce, Color.red);
+        return steeringForce;
+    }
+
     private Vector3 Flee(Vector3 targetPosition)
     {
         Vector3 desiredVelocity = position - targetPosition;
@@ -200,63 +213,143 @@ public abstract class Vehicle : MonoBehaviour
         return Flee(targetObject.transform.position);
     }
 
+    public Vector3 Evade(Zombie zombie)
+    {
+        Vector3 futurePosition = zombie.gameObject.transform.position + zombie.velocity *1f;
+        Vector3 steeringForce = Flee(zombie.GetFuturePosition(1));
+        Debug.DrawLine(this.position, zombie.GetFuturePosition(1), Color.green);
+        //Debug.DrawLine(position, position + steeringForce, Color.red);
+        return steeringForce;
+    }
+
     protected abstract void CalcSteeringForces();
 
-  
-    public Vector3 ObstacleAvoidance()
-    {
-        
-        Vector3 desiredVelocity=Vector3.zero;
-        
-        for(int i = 0; i < obsList.Count; i++)
-        {
 
-            // removing obstacles behind the vehicle
-            if (Vector3.Dot(Vector3.forward, obsList[i].transform.position - this.position) < 0)
+    public Vector3 ObstacleAvoidance(Obstacle obs)
+    {
+        Vector3 desiredVelocity = Vector3.zero;
+        Vector3 vectorToObstacle = obs.transform.position - this.position;      
+        float weight = 0;
+        float rightVectorDot = Vector3.Dot(this.transform.right, vectorToObstacle);
+        float distance = vectorToObstacle.magnitude - obs.radius;
+        //Debug.Log(rightVectorDot * 0.01);
+        // checking if the obstacle is in certain distance
+        if (Math.Abs(rightVectorDot) < radius+ obs.radius)
+        {
+            Debug.Log("inside");
+            // calc weight
+            if (distance <= 0)
             {
-               
+                weight = float.MaxValue;
             }
-            // checking if the obstacle is in the imaginary radius
-            else if ((obsList[i].transform.position - this.position).magnitude < 3)
+            else
             {
-                // Checking if obstacle is left
-                if (Vector3.Dot(Vector3.left, obsList[i].transform.position - this.position) > 0)
+                weight = (float)Math.Pow(safeDistance/distance, 2f);
+            }
+            // clamping weight
+            weight = Mathf.Min(weight, 100);
+            //Debug.Log(safeDistance);
+            //Debug.Log(distance);
+            if (distance < safeDistance)
+            {
+                Debug.Log("distance < safeDistance");
+                // If the obstacle is in left
+                if (rightVectorDot < 0)
                 {
                     Debug.Log("left");
                     // if left then is it colliding?
-                    if (Vector3.Dot(Vector3.left, obsList[i].transform.position - this.position)
-                        < radius + obsList[i].radius+2)
+                    if (Math.Abs(rightVectorDot) < radius + obs.radius)
                     {
-                       
-                        desiredVelocity =- Vector3.right;
-                        desiredVelocity *= maxSpeed*2;
-                        return desiredVelocity - velocity;
+                        desiredVelocity = transform.right;
+                        desiredVelocity *= maxSpeed;
                     }
-                    
                 }
                 // Checking if obstacle is right
-                else if(Vector3.Dot(Vector3.right, obsList[i].transform.position - this.position) >= 0)
+                else
                 {
                     Debug.Log("right");
                     // if right then is it colliding?
-                    if (Vector3.Dot(Vector3.right, obsList[i].transform.position - this.position)
-                        < radius + obsList[i].radius+2)
+                    if (Math.Abs(rightVectorDot) < radius + obs.radius)
                     {
-                       
-                        desiredVelocity = -Vector3.left;
-                        desiredVelocity *= maxSpeed*2;
-                        return desiredVelocity - velocity;
+                        desiredVelocity = -transform.right;
+                        desiredVelocity *= maxSpeed;
                     }
                 }
             }
-            
-            
+          
+           
         }
-        return Vector3.zero;
-       
+
+        Vector3 steeringForce =(desiredVelocity-velocity)* weight;
+    
+        return steeringForce;
+
     }
 
- 
+    public Vector3 GetFuturePosition(float seconds = 1f)
+
+    {
+        return position + velocity * seconds;
+    }
+
+
+    public Vector3 KeepInPark()
+    {
+        Vector3 desiredVelocity = Vector3.zero;
+        if (GetFuturePosition(1.5f).x > 25)
+        {
+            desiredVelocity += this.transform.right*(float)(Math.Pow((25 - GetFuturePosition(1.5f).x)/25,2f));
+        }
+        if(GetFuturePosition(1.5f).x < -25)
+        {
+            desiredVelocity += this.transform.right*(float)(Math.Pow((25 - (GetFuturePosition(1.5f).x)) / 25, 2f));
+        }
+        if (GetFuturePosition(1.5f).z > 25)
+        {
+            desiredVelocity += this.transform.right * (float)(Math.Pow((25-(GetFuturePosition(1.5f).z)) / 25, 2f));
+        }
+        if (GetFuturePosition(1.5f).z < -25)
+        {
+            desiredVelocity += this.transform.right * (float)(Math.Pow((25-GetFuturePosition(1.5f).z) / 25, 2f));
+        }
+        if (desiredVelocity == Vector3.zero)
+        {
+            return Vector3.zero;
+        }
+        return desiredVelocity - velocity;
+    }
+
+    protected Vector3 Separate(Vector3 targetPosition, float desiredDistance)
+    {
+        // Calculate distance to the other object
+        float distanceToTarget = Vector3.Distance(position, targetPosition);
+
+        // if the distance is basically 0, then it's probably me'
+        if (distanceToTarget <= float.Epsilon)
+        {
+            return Vector3.zero;
+        }
+
+        // Flee away from the other object
+        Vector3 fleeForce = Flee(targetPosition);
+
+        // Scale the force based on how close I am
+        fleeForce = fleeForce.normalized * Mathf.Pow(desiredDistance / distanceToTarget, 3);
+
+        // Draw that force
+        Debug.DrawLine(position, position + fleeForce, Color.cyan);
+        return fleeForce;
+    }
+
+
+    protected Vector3 Wander()
+    {
+        Vector3 circleCenter = GetFuturePosition(1.5f);
+        float radius = 2f;
+
+        return Vector3.zero;
+    }
+
 
 #if UNITY_EDITOR
     private void OnValidate()
@@ -264,5 +357,5 @@ public abstract class Vehicle : MonoBehaviour
         // Make sure that mass isn't set to 0
         mass = Mathf.Max(mass, 0.0001f);
     }
-    #endif 
+#endif
 }

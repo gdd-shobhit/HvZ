@@ -11,20 +11,35 @@ public class Zombie : Vehicle
     {
         nearestHuman=FindNearestHuman(GameManager.instance.listOfHumans);
         this.velocity.y = 0;
-        this.position.y = 1.5f;
+        this.position.y = 0.5f;
         this.mass = 3f;
-        Vector3 seekingForce = Vector3.zero;
+        Vector3 ultimateForce = Vector3.zero;
 
         if (nearestHuman!=null){
-            seekingForce += (this.Seek(nearestHuman.gameObject));
-            this.ApplyForce(seekingForce);
+            //ultimateForce += (this.Seek(nearestHuman.gameObject));
+            ultimateForce+=(this.Pursuit(nearestHuman));
+            
         }
         if (Input.GetKeyDown(KeyCode.Space))
         {
             debugLines = !debugLines;
         }
 
-        this.ApplyForce(ObstacleAvoidance()*mass);
+        for (int i = 0; i < obsList.Count; i++)
+        {
+            // if Obstacle is in front
+            if (Vector3.Dot(this.transform.forward, obsList[i].transform.position - this.position) > 0)
+            {
+                ultimateForce += ObstacleAvoidance(obsList[i]);
+            }
+        }
+        for (int i = 0; i < GameManager.instance.listOfZombies.Count; i++)
+        {
+            ultimateForce += Separate(GameManager.instance.listOfZombies[i].position, 2f);
+
+        }
+        ultimateForce += KeepInPark();
+        this.ApplyForce(ultimateForce);
     }
 
     private Human FindNearestHuman(List<Human> list)

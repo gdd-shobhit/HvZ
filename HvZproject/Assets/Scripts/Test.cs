@@ -14,6 +14,6 @@ public class Test : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        vehi.ApplyForce(new Vector3(16, 0, 16));
+        gameObject.transform.position += new Vector3(2, 0, 0)*Time.deltaTime;
     }
 }
