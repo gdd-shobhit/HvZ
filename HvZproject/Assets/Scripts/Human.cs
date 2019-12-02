@@ -21,13 +21,13 @@ public class Human : Vehicle
             CheckIfZombieIsNear();
         }
         else
-        {  
+        {           
             isBeingSeeked = false;
         }
 
         if (isBeingSeeked == false)
-        {
-            //this.velocity = Vector3.zero;
+        { 
+            ultimateForce+=this.Wander();
         }
 
         for (int i = 0; i < obsList.Count; i++)

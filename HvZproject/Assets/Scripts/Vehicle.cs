@@ -18,6 +18,8 @@ public abstract class Vehicle : MonoBehaviour
     public GameObject ground;
     public float radius;
     public float safeDistance;
+    private float time;
+    Vector3 positionToWander;
 
     // The mass of the object. Note that this can't be zero
     public float mass = 1;
@@ -37,7 +39,9 @@ public abstract class Vehicle : MonoBehaviour
         acceleration = Vector3.zero;
         obsList = new List<Obstacle>(FindObjectsOfType<Obstacle>());
         radius = gameObject.transform.localScale.x / 2;
-        safeDistance = 5f;
+        safeDistance = 2f;
+        time = Mathf.Infinity;
+        positionToWander = Vector3.zero;
     }
 
     private void Update()
@@ -46,7 +50,7 @@ public abstract class Vehicle : MonoBehaviour
         // Then, calculate the physics
         UpdatePhysics();
         // Make sure the vehicle stays on screen (remove this for the exercise)
-        Bounce();
+        //Bounce();
         // Finally, update the position
         UpdatePosition();
     }
@@ -260,7 +264,7 @@ public abstract class Vehicle : MonoBehaviour
                     // if left then is it colliding?
                     if (Math.Abs(rightVectorDot) < radius + obs.radius)
                     {
-                        desiredVelocity = transform.right;
+                        desiredVelocity = transform.right*2;
                         desiredVelocity *= maxSpeed;
                     }
                 }
@@ -271,7 +275,7 @@ public abstract class Vehicle : MonoBehaviour
                     // if right then is it colliding?
                     if (Math.Abs(rightVectorDot) < radius + obs.radius)
                     {
-                        desiredVelocity = -transform.right;
+                        desiredVelocity = -transform.right*2;
                         desiredVelocity *= maxSpeed;
                     }
                 }
@@ -298,19 +302,19 @@ public abstract class Vehicle : MonoBehaviour
         Vector3 desiredVelocity = Vector3.zero;
         if (GetFuturePosition(1.5f).x > 25)
         {
-            desiredVelocity += this.transform.right*(float)(Math.Pow((25 - GetFuturePosition(1.5f).x)/25,2f));
+            desiredVelocity += this.transform.right.normalized * (float)(Math.Pow((25 + GetFuturePosition(1.5f).x)/25,6f));
         }
         if(GetFuturePosition(1.5f).x < -25)
         {
-            desiredVelocity += this.transform.right*(float)(Math.Pow((25 - (GetFuturePosition(1.5f).x)) / 25, 2f));
+            desiredVelocity += this.transform.right.normalized * (float)(Math.Pow((25 - (GetFuturePosition(1.5f).x)) / 25, 6f));
         }
         if (GetFuturePosition(1.5f).z > 25)
         {
-            desiredVelocity += this.transform.right * (float)(Math.Pow((25-(GetFuturePosition(1.5f).z)) / 25, 2f));
+            desiredVelocity += this.transform.right.normalized * (float)(Math.Pow((25+(GetFuturePosition(1.5f).z)) / 25, 6f));
         }
         if (GetFuturePosition(1.5f).z < -25)
         {
-            desiredVelocity += this.transform.right * (float)(Math.Pow((25-GetFuturePosition(1.5f).z) / 25, 2f));
+            desiredVelocity += this.transform.right.normalized * (float)(Math.Pow((25-GetFuturePosition(1.5f).z) / 25, 6f));
         }
         if (desiredVelocity == Vector3.zero)
         {
@@ -338,16 +342,40 @@ public abstract class Vehicle : MonoBehaviour
 
         // Draw that force
         Debug.DrawLine(position, position + fleeForce, Color.cyan);
-        return fleeForce;
+        return fleeForce*2;
     }
 
 
     protected Vector3 Wander()
     {
-        Vector3 circleCenter = GetFuturePosition(1.5f);
-        float radius = 2f;
-
+        Vector3 wanderForce = Vector3.zero;
+        time += Time.deltaTime;
+        if (time > 2)
+        {
+            Vector3 circleCenter = GetFuturePosition(1.5f);
+           
+            positionToWander = circleCenter + GetRandomPositionOnCircle();
+            time = 0f;
+        }
+        
+        Debug.DrawLine(position, positionToWander, Color.green);
+        if (positionToWander != Vector3.zero)
+        {
+            wanderForce = Seek(positionToWander);
+            return wanderForce;
+        }
         return Vector3.zero;
+        
+    }
+
+    public Vector3 GetRandomPositionOnCircle()
+    {
+        // circle would be a 5 radius Circle
+        float randomAngle = UnityEngine.Random.Range(0, 2 * Mathf.PI);
+        Vector3 positionOfPoint = Vector3.zero;
+        positionOfPoint.z = Mathf.Sin(randomAngle) * 5f;
+        positionOfPoint.x = Mathf.Cos(randomAngle) * 5f;
+        return positionOfPoint;
     }
 
 

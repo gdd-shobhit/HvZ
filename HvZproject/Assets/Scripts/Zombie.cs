@@ -39,6 +39,10 @@ public class Zombie : Vehicle
 
         }
         ultimateForce += KeepInPark();
+        if (nearestHuman == null)
+        {
+            ultimateForce += this.Wander();
+        }
         this.ApplyForce(ultimateForce);
     }
 

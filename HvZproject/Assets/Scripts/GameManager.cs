@@ -23,8 +23,8 @@ public class GameManager : MonoBehaviour
         {
             Destroy(instance);
         }
-        //SpawnHumans();
-        //SpawnZombies();
+        SpawnHumans();
+        SpawnZombies();
         listOfHumans = new List<Human>(FindObjectsOfType<Human>());
         listOfZombies = new List<Zombie>(FindObjectsOfType<Zombie>());
         inactiveHumans = new List<Human>();
