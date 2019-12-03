@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour
 
     void SpawnZombies()
     {
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 6; i++)
         {
             Instantiate(zombiePrefab,
                         new Vector3(Random.Range(-25, 25), 1, Random.Range(-25, 25)),
@@ -86,5 +86,21 @@ public class GameManager : MonoBehaviour
                 i--;
             }
         }
+    }
+
+    public void ProduceHuman()
+    {
+        Debug.Log("inside ProduceHuman");
+        if (inactiveHumans.Count!=0){
+            int randomNumber = Random.Range(0, inactiveHumans.Count - 1);
+            inactiveHumans[randomNumber].gameObject.SetActive(true);
+            listOfHumans.Add(inactiveHumans[randomNumber]);
+            inactiveHumans.RemoveAt(randomNumber);
+        }
+    }
+    private void OnGUI()
+    {
+        GUI.Box(new Rect(0, 0, 250, 30), "Press Spacebar to enable debuglines");
+        GUI.Box(new Rect(0, 50, 250, 50), "Human Count "+listOfHumans.Count+ "\nOnly 10 humans at max are allowed");
     }
 }

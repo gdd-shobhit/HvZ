@@ -443,7 +443,7 @@ GameObject:
   - component: {fileID: 8918072673169545632}
   - component: {fileID: 8815340133006512668}
   m_Layer: 0
-  m_Name: FreeZombieSimpleMovement
+  m_Name: ZombieModel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -547,9 +547,10 @@ MonoBehaviour:
   direction: {x: 0.01365574, y: 0, z: -0.9999068}
   velocity: {x: 0.005846108, y: 0, z: -0.42806637}
   acceleration: {x: 0, y: 0, z: 0}
-  material1: {fileID: 0}
-  material2: {fileID: 0}
-  material3: {fileID: 0}
+  material1: {fileID: 2100000, guid: 1ebf556a712194246949a7aec9a93e3a, type: 2}
+  material2: {fileID: 2100000, guid: 6c0902af1fa2f174dbbd822eec51dd34, type: 2}
+  material3: {fileID: 2100000, guid: 8102d013a7773f147bf2d2775e007539, type: 2}
+  material4: {fileID: 2100000, guid: 43c71c33e6c45c3449a23187b6f43496, type: 2}
   obsList:
   - {fileID: 0}
   ground: {fileID: 0}

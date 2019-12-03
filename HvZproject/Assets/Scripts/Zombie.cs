@@ -5,7 +5,7 @@ using UnityEngine;
 public class Zombie : Vehicle
 {
     public Human nearestHuman;
-    public bool debugLines = false;
+    
 
     protected override void CalcSteeringForces()
     {
@@ -19,10 +19,6 @@ public class Zombie : Vehicle
             //ultimateForce += (this.Seek(nearestHuman.gameObject));
             ultimateForce+=(this.Pursuit(nearestHuman));
             
-        }
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            debugLines = !debugLines;
         }
 
         for (int i = 0; i < obsList.Count; i++)
@@ -88,13 +84,25 @@ public class Zombie : Vehicle
             GL.Vertex(this.position);        // First endpoint of this line
             GL.Vertex(this.nearestHuman.gameObject.transform.position);        // Second endpoint of this line
             GL.End();
-            Debug.Log("inside render");
+            material2.SetPass(0);
+            GL.Begin(GL.LINES);
+            GL.Vertex(this.position);
+            GL.Vertex(this.GetFuturePosition(2f));
+            GL.End();
+            material3.SetPass(0);
+            GL.Begin(GL.LINES);
+            GL.Vertex(this.transform.position);
+            GL.Vertex(this.transform.position + this.transform.forward * 3f);
+            GL.End();
+            material4.SetPass(0);
+            GL.Begin(GL.LINES);
+            GL.Vertex(this.position);
+            GL.Vertex(this.transform.position + this.transform.right * 3f);
+            GL.End();
+
         }
       
     }
 
-    private void OnGUI()
-    {
-        GUI.Box(new Rect(0, 0, 250, 30), "Press Spacebar to enable debuglines");
-    }
+   
 }

@@ -11,7 +11,8 @@ public class Human : Vehicle
     {
         
         Vector3 ultimateForce = Vector3.zero;
-        
+        this.velocity.y = 0;
+        this.position.y = 0.5f;
         if (CheckIfZombieIsNear())
         {
             isBeingSeeked = true;
@@ -60,5 +61,6 @@ public class Human : Vehicle
         }
         return false;
     }
+
 
 }

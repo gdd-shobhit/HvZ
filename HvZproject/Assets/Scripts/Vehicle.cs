@@ -14,6 +14,7 @@ public abstract class Vehicle : MonoBehaviour
     public Material material1;
     public Material material2;
     public Material material3;
+    public Material material4;
     public List<Obstacle> obsList;
     public GameObject ground;
     public float radius;
@@ -23,6 +24,8 @@ public abstract class Vehicle : MonoBehaviour
 
     // The mass of the object. Note that this can't be zero
     public float mass = 1;
+
+    public bool debugLines = false;
 
     public float maxSpeed = 4;
 
@@ -51,6 +54,11 @@ public abstract class Vehicle : MonoBehaviour
         UpdatePhysics();
         // Make sure the vehicle stays on screen (remove this for the exercise)
         //Bounce();
+        // DebugLines
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            debugLines = !debugLines;
+        }
         // Finally, update the position
         UpdatePosition();
     }
@@ -240,7 +248,6 @@ public abstract class Vehicle : MonoBehaviour
         // checking if the obstacle is in certain distance
         if (Math.Abs(rightVectorDot) < radius+ obs.radius)
         {
-            Debug.Log("inside");
             // calc weight
             if (distance <= 0)
             {
@@ -252,15 +259,13 @@ public abstract class Vehicle : MonoBehaviour
             }
             // clamping weight
             weight = Mathf.Min(weight, 100);
-            //Debug.Log(safeDistance);
-            //Debug.Log(distance);
+        
             if (distance < safeDistance)
             {
-                Debug.Log("distance < safeDistance");
                 // If the obstacle is in left
                 if (rightVectorDot < 0)
                 {
-                    Debug.Log("left");
+                    
                     // if left then is it colliding?
                     if (Math.Abs(rightVectorDot) < radius + obs.radius)
                     {
@@ -271,7 +276,7 @@ public abstract class Vehicle : MonoBehaviour
                 // Checking if obstacle is right
                 else
                 {
-                    Debug.Log("right");
+                   
                     // if right then is it colliding?
                     if (Math.Abs(rightVectorDot) < radius + obs.radius)
                     {
